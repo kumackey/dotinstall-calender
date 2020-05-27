@@ -1,5 +1,12 @@
 <?php
 
+$tail = '';
+$lastDayOfPrevMonth = new DateTime('last day of previous month');
+while ($lastDayOfPrevMonth->format('w') < 6) {
+  $tail = sprintf('<td class="gray">%d</d>', $lastDayOfPrevMonth->format('d')) . $tail;
+  $lastDayOfPrevMonth->sub(new DateInterval('P1D'));
+}
+
 $body = '';
 $period = new DatePeriod(
   new DateTime('first day of this month'),
@@ -11,6 +18,15 @@ foreach ($period as $day) {
   if ($day->format('w') % 7 === 0) { $body .= '</tr><tr>'; }
   $body .= sprintf('<td class="youbi_%d">%d</td>', $day->format('w'), $day->format('d'));
 }
+
+$head = '';
+$firstDayOfNextMonth = new DateTime('first day of next month');
+while ($firstDayOfNextMonth->format('w') > 0 ) {
+  $head .= sprintf('<td class="gray">%d</d>', $firstDayOfNextMonth->format('d'));
+  $firstDayOfNextMonth->add(new DateInterval('P1D'));
+}
+
+$html = '<tr>' . $tail . $body . $head . '</tr>';
 
 ?>
 <!DOCTYPE html>
@@ -39,9 +55,7 @@ foreach ($period as $day) {
         <td>Fri</td>
         <td>Sat</td>
       </tr>
-      <tr>
-        <?php echo $body; ?>
-      </tr>
+      <?php echo $html; ?>
     </tbody>
     <tfoot>
       <tr>
